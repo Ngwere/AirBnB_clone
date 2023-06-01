@@ -49,9 +49,15 @@ class BaseModel:
         self.updated_at = datetime.utcnow()
 
     def to_dict(self):
-        """Return a dictionary containing all keys/values of __dict__ of the instance"""
-        dic = self.__dict__.copy()
-        dic['__class__'] = type(self).__name__
-        dic['created_at'] = self.created_at.isoformat()
-        dic['updated_at'] = self.updated_at.isoformat()
-        return dic
+        """
+        Method returns a dictionary containing all 
+        keys/values of __dict__ instance
+        """
+        map_objects = {}
+        for key, value in self.__dict__.items():
+            if key == "created_at" or key == "updated_at":
+                map_objects[key] = value.isoformat()
+            else:
+                map_objects[key] = value
+        map_objects["__class__"] = self.__class__.__name__
+        return map_objects
