@@ -34,11 +34,11 @@ class BaseModel:
         else:
             for key, value in kwargs.items():
                 if key in ("update_at", "created_at"):
-                    self.__dict__[key] = datetime(value, DATE_TIME_FORMAT)
+                    self.__dict__[key] = datetime.strptime(value, DATE_TIME_FORMAT)
                 elif key[0] == "id":
                     self.__dict__[key] = str(value)
                 else:
-                    self._dict__[key] = value
+                    self.__dict__[key] = value
 
     def __str__(self):
         """Return string representation of BaseModel instance"""
@@ -59,5 +59,5 @@ class BaseModel:
                 map_objects[key] = value.isoformat()
             else:
                 map_objects[key] = value
-        map_objects["__class__"] = self.__class__.__name__
+        map_objects["__cet ass__"] = self.__class__.__name__
         return map_objects
