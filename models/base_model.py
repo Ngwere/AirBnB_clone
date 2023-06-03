@@ -2,7 +2,7 @@
 """
 The BaseModel package
 """
-
+import models
 from uuid import uuid4
 from datetime import datetime
 
@@ -31,6 +31,7 @@ class BaseModel:
             self.id = str(uuid4())
             self.created_at = datetime.utcnow()
             self.updated_at = datetime.utcnow()
+            models.storage.new(self)
         else:
             for key, value in kwargs.items():
                 if key in ("update_at", "created_at"):
@@ -39,7 +40,7 @@ class BaseModel:
                     self.__dict__[key] = str(value)
                 else:
                     self.__dict__[key] = value
-
+                   
     def __str__(self):
         """Return string representation of BaseModel instance"""
         return "[{}] ({}) {}".format(type(self).__name__, self.id, self.__dict__)
@@ -47,6 +48,7 @@ class BaseModel:
     def save(self):
         """Update the public instance attribute updated_at with the current datetime"""
         self.updated_at = datetime.utcnow()
+        models.storage.save()
 
     def to_dict(self):
         """
