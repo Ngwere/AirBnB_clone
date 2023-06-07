@@ -2,7 +2,7 @@
 """HBNBCommand interpreter
    version: 0.1
 """
-
+import re
 import json
 import models
 import cmd
@@ -213,7 +213,65 @@ class HBNBCommand(cmd.Cmd):
 				return
 		setattr(d[key], attr_k, attr_v)
 		models.storage.save()
-					
+
+	def my_count(self, class_n):
+		"""
+		Method counts instances of a certain class
+
+		Args:
+			class_n(str): the class name
+		"""
+		count = 0
+		for instance in models.storage.all().values():
+			if instance.__class__.__name__ == class_n:
+				count += 1
+		print(count)
+
+	def default(self, line):
+		"""Meod to take care of following commands:
+		<class name>.all()
+		<class name>.count()
+		<class name>.show(<id>)
+		<class name>.destry(<id>)
+		<class name>.update(<id>, <attribute name>, <attribut value>)
+		<class name>.updat(<id>, <dictionary representation>)
+
+		Description: 
+			Creates a list representations of functional models
+			then use the functunal methods to implement user 
+			commands, by validating all the input commands
+		"""
+		names = ["BaseModel", "User", "City", "State", "Amenity", "Place", "Review"]
+
+		commands = {"all": self.do_all,
+			"count": self.my_count,
+			"show": self.do_show,
+			"destry": self.do_destroy,
+			"update": self.do_update }
+		args = re.match(r"^(\w+)\.(\w+)\((.*)\)", line)
+		if args:
+			args = args.groups()
+		if not args or len(args) < 2 or args[0] not in names \
+			or args[1] not in commands.keys():
+			super().default(line)
+			return
+		
+		if args[1] in ["all", "count"]:
+			commands[args[1]](args[0])
+		elif args[1] in ["show", "destroy"]:
+			commands[args[1]](args[0] + ' ' + args[2])
+		elif args[1] == "update":
+			params = re.match(r"\"(.+?)\", (.+)", args[2])
+			if params.groups()[1][0] == '{':
+				dic_p = eval(params.groups()[1])
+				for k, v in dic_p.items():
+					commands[args[1]](args[0] + " " + params.groups()[0] +
+						" " + k + " " + str(v))
+			else:
+				rest = params.grups()[1].split(",")
+				commands[args[1]](args[0] + " " + params.groups()[0] + " " +
+					rest[0] + " " + rest[1])
+
 
 if __name__ == "__main__":
 	cli = HBNBCommand()
