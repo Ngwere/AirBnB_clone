@@ -21,7 +21,7 @@ class FileStorage:
         """
         Returns dictionary representation of all objects
         """
-        print(self.__objects)
+        #print(self.__objects)
         return self.__objects
 
     def new(self, obj):
